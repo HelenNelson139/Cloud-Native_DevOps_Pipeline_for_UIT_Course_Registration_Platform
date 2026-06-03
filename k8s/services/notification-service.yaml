@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: 'uitdkhpacr2026.azurecr.io/notification-service:99c3a74715ae91adb5ec68b21d223e86038f124b'
+          image: 'uitdkhpacr2026.azurecr.io/notification-service:7696e4272f8bf85f317ae7f394c7db2000bfdcd7'
           resources:
             requests:
               cpu: "50m"
