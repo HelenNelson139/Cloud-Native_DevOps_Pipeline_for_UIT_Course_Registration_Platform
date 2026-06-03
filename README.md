@@ -1,4 +1,4 @@
-# AI-Assisted DevOps Pipeline for UIT Course Registration Platform
+# Cloud-Native DevOps Pipeline for UIT Course Registration Platform
 Microservices-based course registration system deployed on Azure Kubernetes Service with GitHub Actions, Argo CD, Argo Rollouts, Terraform, Prometheus/Grafana monitoring, and an AI-assisted canary decision service.
 
 ## Overview
