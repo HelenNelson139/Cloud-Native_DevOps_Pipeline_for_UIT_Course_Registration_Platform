@@ -36,4 +36,4 @@ spec:
               pod_selector: "api-gateway-rollout-.*"
       successCondition: "result.decision == 'Successful'"
       failureCondition: "result.decision == 'Rollback'"
-     # Running    -> Chưa success/chưa fail -> thử lại lần sau
+# Running    -> Chưa success/chưa fail -> thử lại lần sau
