@@ -68,3 +68,5 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 *tfplan*
+
+kubectl-argo-rollouts.exe

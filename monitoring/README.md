@@ -6,7 +6,6 @@ Main components:
 - Alertmanager: sends alerts.
 - kube-state-metrics and node-exporter: expose Kubernetes and node metrics.
 - Prometheus Operator: manages `PrometheusRule` and `ServiceMonitor`.
-
 ## Prerequisites
 Run from the project root and check the AKS context:
 ```bash
@@ -26,7 +25,6 @@ The script installs `kube-prometheus-stack`, then applies:
 - alert rules from `monitoring/rules/`
 - service monitors from `monitoring/service-monitors/`
 - Grafana dashboards from `monitoring/dashboards/`
-
 ## Apply Project Monitoring Only
 Use this when Prometheus/Grafana already exists and only rules, ServiceMonitors, or dashboards changed.
 
@@ -41,6 +39,19 @@ Apply only the Grafana dashboard:
 ```bash
 kubectl apply -f monitoring/dashboards/uit-course-services-dashboard.yaml
 ```
+Apply only the API Gateway canary monitoring resources:
+```bash
+kubectl apply -f monitoring/service-monitors/api-gateway.yaml
+kubectl apply -f monitoring/dashboards/api-gateway-canary-dashboard.yaml
+```
+
+Check project monitoring resources:
+```bash
+kubectl get servicemonitor -n monitoring
+kubectl get prometheusrule -n monitoring
+kubectl get configmap -n monitoring -l grafana_dashboard=1
+```
+
 ## Application Metrics
 Node.js services expose metrics at:
 ```text
@@ -152,4 +163,10 @@ kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 909
 URL:
 ```text
 http://localhost:9090
+```
+Useful PromQL checks:
+```promql
+up{namespace="default"}
+api_gateway_http_requests_total{namespace="default",service=~"api-gateway-stable|api-gateway-canary"}
+uit_course_http_requests_total{namespace="default"}
 ```

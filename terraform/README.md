@@ -23,7 +23,10 @@ terraform -version
 ```
 ## Remote State Backend
 Terraform state is stored in Azure Storage so it is not tied to one local machine.
-
+Run from the Terraform folder:
+```powershell
+cd terraform
+```
 Create the backend resources once:
 ```powershell
 $TFSTATE_RG="uit-tfstate-rg"
@@ -34,14 +37,11 @@ az group create --name $TFSTATE_RG --location $TFSTATE_LOCATION
 az storage account create --name $TFSTATE_STORAGE --resource-group $TFSTATE_RG --location $TFSTATE_LOCATION --sku Standard_LRS --kind StorageV2 --allow-blob-public-access false
 az storage container create --name tfstate --account-name $TFSTATE_STORAGE --auth-mode login
 ```
-
 `$TFSTATE_STORAGE` must be globally unique, lowercase, and contain only letters and numbers.
-
 Create local backend config:
 ```powershell
 Copy-Item backend.hcl.example backend.hcl
 ```
-
 Edit `backend.hcl` and set the real storage account name:
 ```hcl
 resource_group_name  = "uit-tfstate-rg"
@@ -49,12 +49,10 @@ storage_account_name = "uitdkhptfstate0001"
 container_name       = "tfstate"
 key                  = "uit-course.terraform.tfstate"
 ```
-
 Migrate existing local state to Azure Storage:
 ```powershell
 terraform init -backend-config=backend.hcl -migrate-state
 ```
-
 `backend.hcl` is local-only and must not be committed.
 
 ## Run Terraform
@@ -76,6 +74,16 @@ var.db_admin_password
 This is the PostgreSQL admin password for user `pgadmin`.
 Use a strong password and do not commit real passwords or `.tfvars` files.
 
+After `terraform apply`, connect `kubectl` to the created AKS cluster:
+```powershell
+az aks get-credentials `
+  --resource-group uit-dkhp-rg `
+  --name devops-aks `
+  --overwrite-existing
+
+kubectl get nodes
+```
+
 ## Monitoring Helm Release
 Terraform manages the `kube-prometheus-stack` Helm release through `modules/monitoring`.
 
@@ -96,6 +104,24 @@ bash monitoring/scripts/apply-monitoring-rules.sh
 ```powershell
 terraform output
 ```
+Check remote state:
+```powershell
+az storage blob list `
+  --account-name $TFSTATE_STORAGE `
+  --container-name tfstate `
+  --auth-mode login `
+  --output table
+```
+
+Check AKS node autoscaling:
+```powershell
+az aks nodepool show `
+  --resource-group uit-dkhp-rg `
+  --cluster-name devops-aks `
+  --name default `
+  --query "{enableAutoScaling:enableAutoScaling,minCount:minCount,maxCount:maxCount,count:count}"
+```
+
 ## Connect To AKS
 ```powershell
 az aks get-credentials --resource-group uit-dkhp-rg --name devops-aks --overwrite-existing
