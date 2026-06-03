@@ -34,7 +34,6 @@ spec:
               canary_service: "api-gateway-canary"
               stable_service: "api-gateway-stable"
               pod_selector: "api-gateway-rollout-.*"
-      # --- 3. ĐỊNH NGHĨA LẠI LUỒNG LOGIC QUYẾT ĐỊNH ---
       successCondition: "result.decision == 'Successful'"
       failureCondition: "result.decision == 'Rollback'"
-      # Thêm dòng này: Khi AI trả về "Running", Argo sẽ hiểu là "Chưa quyết định được, thử lại ở nhịp sau"
+     # Running    -> Chưa success/chưa fail -> thử lại lần sau

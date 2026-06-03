@@ -1,10 +1,27 @@
 # Canary AI Agent
-
 The AI agent is used as an advisor for Argo Rollouts canary analysis.
 ## Purpose
 The agent reads Prometheus metrics for the stable and canary services, builds a time-series state vector, runs the DRQN model, and returns a rollout decision.
 ```text
 Prometheus metrics -> AI agent -> AnalysisTemplate -> Argo Rollouts
+```
+## Local Test
+Install dependencies:
+```bash
+cd ai-agent
+python -m pip install -r requirements.txt
+```
+Run tests:
+```bash
+pytest
+```
+Check Python syntax:
+```bash
+python -m py_compile main.py train.py core/*.py
+```
+Run locally:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8085
 ```
 ## Endpoints
 ```text
@@ -32,6 +49,26 @@ Optional field:
 }
 ```
 If `pod_selector` is not provided, the agent derives it from `name`.
+PowerShell request example:
+```powershell
+$body = @{
+  app_info = @{
+    name = "api-gateway-rollout"
+    weight = 50
+    namespace = "default"
+    canary_service = "api-gateway-canary"
+    stable_service = "api-gateway-stable"
+    pod_selector = "api-gateway-rollout-.*"
+  }
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri http://localhost:8085/predict `
+  -ContentType "application/json" `
+  -Body $body
+```
+
 ## Predict Response
 The response includes both the Argo-compatible decision and debugging information:
 
@@ -46,4 +83,16 @@ metrics_normalized  normalized state used by the model
 q_values            model Q-values for each action
 model_decision      decision before safety guard override
 guard_triggered     whether safety guard changed the model decision
+```
+
+## Kubernetes Check
+
+Port-forward the AI Agent service:
+```powershell
+kubectl port-forward -n default svc/canary-ai-agent-svc 8085:80
+```
+Check logs:
+```powershell
+kubectl logs -n default deploy/canary-ai-agent --tail=100
+kubectl logs -n default deploy/canary-ai-agent --since=5m | Select-String "history_build|model_inference|predict_finish|safety_override"
 ```

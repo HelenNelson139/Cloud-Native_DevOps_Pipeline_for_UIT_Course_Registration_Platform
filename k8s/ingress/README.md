@@ -9,7 +9,6 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --create-namespace
 ```
 API Gateway stable/canary metrics are exported by the API Gateway pods themselves at `/metrics`.
-
 ## Apply Ingress
 ```bash
 kubectl apply -f k8s/ingress/ingress.yaml
@@ -24,6 +23,11 @@ kubectl describe ingress uit-dkhp-ingress
 Public URL:
 ```text
 http://20.44.237.162
+```
+Smoke test:
+```bash
+curl http://20.44.237.162
+curl http://20.44.237.162/api/courses
 ```
 ## Notes
 - The Ingress routes external traffic to `api-gateway-stable`.

@@ -4,7 +4,7 @@ import random
  
 from core.feature_pipeline import EPSILON, normalize_raw_metrics, to_state_vector
  
-# Định nghĩa tên để Log cho đẹp
+# Định nghĩa tên để Log 
 SCENARIO_NAMES = {0: "Healthy", 1: "Resource Leak", 2: "Ticking Bomb", 3: "Critical Crash", 4: "Stable Equiv"}
 ACTION_NAMES = {0: "+10%", 1: "+5%", 2: "Stay", 3: "-5%", 4: "ROLLBACK"}
  

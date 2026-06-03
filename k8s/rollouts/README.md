@@ -13,7 +13,9 @@ Check:
 ```bash
 kubectl get pods -n argo-rollouts
 ```
-## Build AI Agent Image
+## Build AI Agent Image Manually
+
+In the normal GitOps flow, GitHub Actions builds and pushes the AI Agent image. Use this only for a manual test:
 ```powershell
 az acr login --name uitdkhpacr2026
 docker build -t uitdkhpacr2026.azurecr.io/canary-ai-agent:latest .\ai-agent
@@ -32,6 +34,22 @@ kubectl logs deploy/canary-ai-agent --tail=50
 kubectl get rollout
 kubectl describe rollout api-gateway-rollout
 kubectl get analysisrun
+```
+Watch a rollout:
+```powershell
+kubectl get rollout api-gateway-rollout -n default -w
+```
+
+Retry an aborted rollout:
+```powershell
+.\kubectl-argo-rollouts.exe retry rollout api-gateway-rollout -n default
+```
+
+Check the AI Agent service:
+```powershell
+kubectl port-forward -n default svc/canary-ai-agent-svc 8085:80
+Invoke-RestMethod http://localhost:8085/health
+Invoke-RestMethod http://localhost:8085/model
 ```
 ## Prometheus Metric Checks
 The AI agent needs Prometheus data for the rollout pods and for stable/canary traffic.
