@@ -121,19 +121,32 @@ Hien co:
 - `rollouts/`: Argo Rollouts cho API Gateway va AI AnalysisTemplate.
 - `jobs/`: DB migration hook.
 ## 7. CI/CD
-Pipeline chinh:
+Pipeline duoc tach theo Terraform va tung service:
 ```text
-.github/workflows/deploy.yml
+.github/workflows/terraform.yml
+.github/workflows/frontend.yml
+.github/workflows/auth-service.yml
+.github/workflows/course-service.yml
+.github/workflows/registration-service.yml
+.github/workflows/notification-service.yml
+.github/workflows/api-gateway.yml
+.github/workflows/ai-agent.yml
+.github/workflows/db-migration.yml
 ```
 Pipeline dang lam:
-1. Validate Node applications.
-2. Validate Python AI Agent.
-3. Build Docker image cho tung service.
-4. Push image len Azure Container Registry.
-5. Update Kubernetes manifests bang immutable image tag theo commit SHA.
-6. Validate Kubernetes YAML bang kubeconform.
-7. Commit lai image tag vao Git.
-8. Gui Teams notification khi pipeline fail.
+1. Terraform workflow chay fmt, init, validate, Checkov scan, plan va chi apply khi push len `main`.
+2. Service workflow chi chay khi service do hoac manifest lien quan thay doi.
+3. Node services chay npm ci, production npm audit, test va build.
+4. AI Agent chay pip install, pip-audit, pytest va syntax check.
+5. SonarQube/SonarCloud scan duoc chay khi cau hinh `SONAR_TOKEN` va `SONAR_HOST_URL`.
+6. Build Docker image cho service thay doi.
+7. Scan Docker image bang Trivy voi scanner `vuln` cho image da build, tranh scan Docker context khong can thiet.
+8. Push image len Azure Container Registry.
+9. Update Kubernetes manifests bang immutable image tag theo commit SHA.
+10. Validate Kubernetes YAML bang kubeconform.
+11. Commit lai image tag vao Git.
+12. Tao GitHub Deployment cho tung service de trace deployment.
+13. Security scans mac dinh la advisory; bat `SECURITY_GATE=true` khi muon Checkov, audit va Trivy thanh hard gate.
 
 ## 8. GitOps voi Argo CD
 Argo CD Application:
@@ -143,7 +156,7 @@ argocd/app/uit-course.yaml
 ```
 Argo CD dang theo doi:
 ```text
-repo: DevOps_Project_Group8
+repo: Cloud-Native_DevOps_Pipeline_for_UIT_Course_Registration_Platform
 branch: main
 path: k8s
 ```

@@ -1,0 +1,37 @@
+name: Course Service CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/course/**
+      - k8s/services/course-service.yaml
+      - .github/workflows/course-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - services/course/**
+      - k8s/services/course-service.yaml
+      - .github/workflows/course-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  course-service:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Course Service
+      image_name: course-service
+      app_path: services/course
+      runtime: node
+      docker_context: services/course
+      dockerfile: services/course/Dockerfile
+      manifest_paths: k8s/services/course-service.yaml
+    secrets: inherit

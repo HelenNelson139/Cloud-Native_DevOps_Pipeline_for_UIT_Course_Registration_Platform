@@ -1,0 +1,43 @@
+name: API Gateway CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - api-gateway/**
+      - frontend/**
+      - Dockerfile.gateway
+      - .dockerignore
+      - k8s/rollouts/api-gateway-rollout.yaml
+      - .github/workflows/api-gateway.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - api-gateway/**
+      - frontend/**
+      - Dockerfile.gateway
+      - .dockerignore
+      - k8s/rollouts/api-gateway-rollout.yaml
+      - .github/workflows/api-gateway.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  api-gateway:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: API Gateway
+      image_name: api-gateway
+      app_path: frontend
+      runtime: node
+      docker_context: .
+      dockerfile: Dockerfile.gateway
+      manifest_paths: k8s/rollouts/api-gateway-rollout.yaml
+    secrets: inherit

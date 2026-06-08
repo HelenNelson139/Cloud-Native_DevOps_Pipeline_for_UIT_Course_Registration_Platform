@@ -1,0 +1,37 @@
+name: Auth Service CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/auth/**
+      - k8s/services/auth-service.yaml
+      - .github/workflows/auth-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - services/auth/**
+      - k8s/services/auth-service.yaml
+      - .github/workflows/auth-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  auth-service:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Auth Service
+      image_name: auth-service
+      app_path: services/auth
+      runtime: node
+      docker_context: services/auth
+      dockerfile: services/auth/Dockerfile
+      manifest_paths: k8s/services/auth-service.yaml
+    secrets: inherit

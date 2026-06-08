@@ -1,0 +1,37 @@
+name: Notification Service CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/notification/**
+      - k8s/services/notification-service.yaml
+      - .github/workflows/notification-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - services/notification/**
+      - k8s/services/notification-service.yaml
+      - .github/workflows/notification-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  notification-service:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Notification Service
+      image_name: notification-service
+      app_path: services/notification
+      runtime: node
+      docker_context: services/notification
+      dockerfile: services/notification/Dockerfile
+      manifest_paths: k8s/services/notification-service.yaml
+    secrets: inherit

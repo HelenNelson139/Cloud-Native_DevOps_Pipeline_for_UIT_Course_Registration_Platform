@@ -59,7 +59,7 @@ spec:
               memory: "512Mi"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
   strategy:
     canary:
       canaryService: api-gateway-canary

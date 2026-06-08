@@ -60,7 +60,7 @@ argocd/app/uit-course.yaml
 It points to:
 
 ```text
-Repository: https://github.com/HelenNelson139/DevOps_Project_Group8.git
+Repository: https://github.com/HelenNelson139/Cloud-Native_DevOps_Pipeline_for_UIT_Course_Registration_Platform.git
 Branch: main
 Path: k8s
 Destination: in-cluster

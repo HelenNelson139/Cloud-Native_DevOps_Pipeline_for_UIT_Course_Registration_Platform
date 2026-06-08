@@ -1,6 +1,7 @@
 resource "azurerm_private_dns_zone" "default" {
   name                = "${var.server_name}-pdz.postgres.database.azure.com"
   resource_group_name = var.resource_group_name
+  tags                = var.tags
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "default" {
@@ -8,21 +9,27 @@ resource "azurerm_private_dns_zone_virtual_network_link" "default" {
   private_dns_zone_name = azurerm_private_dns_zone.default.name
   virtual_network_id    = var.vnet_id
   resource_group_name   = var.resource_group_name
+  tags                  = var.tags
 }
 
 resource "azurerm_postgresql_flexible_server" "postgres" {
+  #checkov:skip=CKV_AZURE_136:Geo-redundant backup is configurable but disabled by default for low-cost lab environments.
+  #checkov:skip=CKV2_AZURE_57:Flexible Server is deployed into a delegated private subnet with public access disabled instead of a separate Private Endpoint.
   name                          = var.server_name
   resource_group_name           = var.resource_group_name
   location                      = var.location
-  version                       = "16"
+  version                       = var.postgresql_version
   delegated_subnet_id           = var.db_subnet_id
   private_dns_zone_id           = azurerm_private_dns_zone.default.id
   public_network_access_enabled = false
   administrator_login           = var.admin_user
   administrator_password        = var.admin_password
-  zone                          = "1"
-  storage_mb                    = 32768
-  sku_name                      = "B_Standard_B1ms"
+  zone                          = var.zone
+  storage_mb                    = var.storage_mb
+  sku_name                      = var.sku_name
+  backup_retention_days         = var.backup_retention_days
+  geo_redundant_backup_enabled  = var.geo_redundant_backup_enabled
+  tags                          = var.tags
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.default]
 }

@@ -3,13 +3,15 @@
 FROM node:20-alpine AS frontend
 WORKDIR /app
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
 FROM node:20-alpine
 WORKDIR /app
-COPY api-gateway/server.js ./server.js
+ENV PORT=8080
+COPY --chown=node:node api-gateway/server.js ./server.js
 COPY --from=frontend /app/dist /usr/share/api-gateway/html
-EXPOSE 80
+USER node
+EXPOSE 8080
 CMD ["node", "server.js"]

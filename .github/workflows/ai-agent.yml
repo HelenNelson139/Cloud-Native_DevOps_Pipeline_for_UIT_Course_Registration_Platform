@@ -1,0 +1,37 @@
+name: AI Agent CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ai-agent/**
+      - k8s/rollouts/canary-ai-agent.yaml
+      - .github/workflows/ai-agent.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - ai-agent/**
+      - k8s/rollouts/canary-ai-agent.yaml
+      - .github/workflows/ai-agent.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  ai-agent:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: AI Agent
+      image_name: canary-ai-agent
+      app_path: ai-agent
+      runtime: python
+      docker_context: ai-agent
+      dockerfile: ai-agent/Dockerfile
+      manifest_paths: k8s/rollouts/canary-ai-agent.yaml
+    secrets: inherit

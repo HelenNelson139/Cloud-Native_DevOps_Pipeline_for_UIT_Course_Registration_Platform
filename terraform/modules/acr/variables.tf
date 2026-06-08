@@ -18,3 +18,9 @@ variable "sku" {
   default     = "Basic"
   description = "SKU of the ACR"
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags applied to the ACR."
+  default     = {}
+}

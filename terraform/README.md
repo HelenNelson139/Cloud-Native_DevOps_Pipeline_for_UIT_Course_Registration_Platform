@@ -59,6 +59,7 @@ terraform init -backend-config=backend.hcl -migrate-state
 ```powershell
 cd terraform
 terraform init -backend-config=backend.hcl
+terraform fmt -check -recursive
 terraform validate
 terraform plan
 terraform apply
@@ -74,6 +75,31 @@ var.db_admin_password
 This is the PostgreSQL admin password for user `pgadmin`.
 Use a strong password and do not commit real passwords or `.tfvars` files.
 
+Common values can be overridden with a local `.tfvars` file or GitHub Actions secrets/variables:
+
+```hcl
+environment                  = "dev"
+acr_sku                      = "Basic"
+aks_min_count                = 1
+aks_max_count                = 3
+enable_monitoring            = true
+db_backup_retention_days     = 7
+db_geo_redundant_backup_enabled = false
+tags = {
+  Owner = "uit-devops"
+}
+```
+
+For low-cost lab runs, keep `db_geo_redundant_backup_enabled = false` and `aks_min_count = 1`. For production, review these values before enabling security gates.
+
+## Security Scanning
+GitHub Actions runs Checkov against Terraform. Lab-only cost and access tradeoffs are documented inline with `checkov:skip` comments, for example ACR Premium-only controls, private AKS API endpoint, paid AKS SLA, customer-managed disk encryption, and PostgreSQL geo-redundant backups.
+
+Local check:
+```powershell
+checkov -d terraform --framework terraform --quiet --skip-path terraform/.terraform --skip-path terraform/terraform.tfstate --skip-path terraform/terraform.tfstate.backup
+```
+
 After `terraform apply`, connect `kubectl` to the created AKS cluster:
 ```powershell
 az aks get-credentials `
@@ -86,6 +112,8 @@ kubectl get nodes
 
 ## Monitoring Helm Release
 Terraform manages the `kube-prometheus-stack` Helm release through `modules/monitoring`.
+
+The Helm provider uses the AKS kubeconfig values exported by the AKS module, so GitHub Actions does not depend on an existing `~/.kube/config` file. Set `enable_monitoring = false` if you want Terraform to provision only Azure infrastructure first.
 
 If monitoring was already installed manually by script, import the existing Helm release before running `terraform apply`:
 ```powershell
