@@ -87,9 +87,12 @@ For a new environment, follow the documentation in this order. The root README o
    ```
 
 4. **Configure GitHub Actions secrets**
-   Set the required repository secrets for Azure login, ACR, and Teams webhook before running CI/CD.
+   Set the required repository secrets for Terraform, Azure login, ACR, optional SonarQube, and Teams webhook before running CI/CD.
    ```text
-   .github/workflows/deploy.yml
+   .github/workflows/terraform.yml
+   .github/workflows/*-service.yml
+   .github/workflows/api-gateway.yml
+   .github/workflows/ai-agent.yml
    ```
 
 5. **Install and configure Argo CD**
@@ -139,15 +142,52 @@ Kubernetes namespace: default
 Monitoring namespace: monitoring
 ```
 
-## GitHub Actions Secrets
+## GitHub Actions
 
-The CI/CD workflow requires these repository secrets:
+The project uses separate GitHub Actions workflows instead of one monolithic pipeline:
+
+```text
+.github/workflows/terraform.yml              Terraform fmt, init, validate, Checkov, plan, apply
+.github/workflows/frontend.yml               Frontend test/audit/build only
+.github/workflows/auth-service.yml           Auth service CI/CD
+.github/workflows/course-service.yml         Course service CI/CD
+.github/workflows/registration-service.yml   Registration service CI/CD
+.github/workflows/notification-service.yml   Notification service CI/CD
+.github/workflows/api-gateway.yml            API Gateway CI/CD, also rebuilds when frontend changes
+.github/workflows/ai-agent.yml               AI Agent CI/CD
+.github/workflows/db-migration.yml           Database migration image CI/CD
+```
+
+Each service workflow is path-filtered, so a change in one service only runs that service's pipeline. Service pipelines run tests, production dependency audit, optional SonarQube scan, Docker build, Trivy image vulnerability scan, ACR push, Kubernetes manifest image update, kubeconform validation, and GitHub Deployment creation. The frontend is bundled into the API Gateway image, so frontend changes also trigger `api-gateway.yml`.
+
+Docker build contexts are limited with `.dockerignore` files so builds do not send `.git`, Terraform state, node_modules, local caches, or unrelated service folders to Docker.
+
+Terraform runs `apply` only for push events on `main`.
+
+## GitHub Actions Secrets And Variables
+
+The workflows require these repository secrets:
 ```text
 AZURE_CREDENTIALS    Azure service principal JSON used by azure/login
 ACR_NAME             Azure Container Registry name, for example uitdkhpacr2026
 ACR_LOGIN_SERVER     ACR login server, for example uitdkhpacr2026.azurecr.io
+DB_ADMIN_PASSWORD    PostgreSQL admin password passed to Terraform as TF_VAR_db_admin_password
+TFSTATE_STORAGE_ACCOUNT  Azure Storage Account used for Terraform remote state
+TFSTATE_RESOURCE_GROUP    Optional remote state resource group, defaults to uit-tfstate-rg
+TFSTATE_CONTAINER         Optional remote state container, defaults to tfstate
+TFSTATE_KEY               Optional state key, defaults to uit-course.terraform.tfstate
+SONAR_TOKEN          Optional token for SonarQube/SonarCloud scan
+SONAR_HOST_URL       Optional SonarQube/SonarCloud host URL
 TEAMS_WEBHOOK_URL    Optional Microsoft Teams webhook for CI/CD failure notifications
 ```
+
+Optional repository variables:
+```text
+PUBLIC_APP_URL       Public application URL attached to GitHub Deployment statuses
+SECURITY_GATE        Set to true to make Checkov, dependency audit, and Trivy findings fail workflows
+```
+
+Leave `SECURITY_GATE` unset or set to `false` for lab/demo pipelines. Set it to `true` only after dependency major upgrades have been planned, because the current NestJS services still have production dependency advisories that require breaking-version upgrades.
 
 Do not commit real Azure credentials, webhook URLs, database passwords, `.env`, `backend.hcl`, `.tfvars`, or Terraform state files.
 

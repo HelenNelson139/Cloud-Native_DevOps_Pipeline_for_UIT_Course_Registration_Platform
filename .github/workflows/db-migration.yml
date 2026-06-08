@@ -1,0 +1,37 @@
+name: Database Migration Image CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - database/**
+      - k8s/jobs/db-migration-job.yaml
+      - .github/workflows/db-migration.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - database/**
+      - k8s/jobs/db-migration-job.yaml
+      - .github/workflows/db-migration.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  db-migration:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Database Migration Image
+      image_name: db-migration
+      app_path: database
+      runtime: docker
+      docker_context: database
+      dockerfile: database/Dockerfile
+      manifest_paths: k8s/jobs/db-migration-job.yaml
+    secrets: inherit

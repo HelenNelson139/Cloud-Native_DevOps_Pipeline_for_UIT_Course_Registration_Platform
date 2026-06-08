@@ -6,11 +6,15 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY core/ ./core/
-COPY models/ ./models/
-COPY main.py .
+RUN useradd --create-home --shell /usr/sbin/nologin appuser
+
+COPY --chown=appuser:appuser core/ ./core/
+COPY --chown=appuser:appuser models/ ./models/
+COPY --chown=appuser:appuser main.py .
 
 ENV PYTHONPATH=/app
+
+USER appuser
 
 EXPOSE 8000
 

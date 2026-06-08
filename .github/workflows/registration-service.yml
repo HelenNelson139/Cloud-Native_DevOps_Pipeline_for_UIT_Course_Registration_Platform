@@ -1,0 +1,37 @@
+name: Registration Service CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/registration/**
+      - k8s/services/registration-service.yaml
+      - .github/workflows/registration-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - services/registration/**
+      - k8s/services/registration-service.yaml
+      - .github/workflows/registration-service.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  registration-service:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Registration Service
+      image_name: registration-service
+      app_path: services/registration
+      runtime: node
+      docker_context: services/registration
+      dockerfile: services/registration/Dockerfile
+      manifest_paths: k8s/services/registration-service.yaml
+    secrets: inherit

@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/HelenNelson139/DevOps_Project_Group8.git
+    repoURL: https://github.com/HelenNelson139/Cloud-Native_DevOps_Pipeline_for_UIT_Course_Registration_Platform.git
     targetRevision: main
     path: k8s
     directory:

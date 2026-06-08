@@ -1,0 +1,33 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - frontend/**
+      - .github/workflows/frontend.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  push:
+    branches:
+      - main
+    paths:
+      - frontend/**
+      - .github/workflows/frontend.yml
+      - .github/workflows/reusable-service-ci-cd.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  frontend:
+    uses: ./.github/workflows/reusable-service-ci-cd.yml
+    with:
+      service_name: Frontend
+      image_name: frontend
+      app_path: frontend
+      runtime: node
+      build_image: false
+    secrets: inherit

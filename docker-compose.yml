@@ -62,7 +62,7 @@ services:
     container_name: uit-dkhp-gateway-helen
     restart: unless-stopped
     ports:
-      - "${GATEWAY_PORT:-8090}:80"
+      - "${GATEWAY_PORT:-8090}:8080"
     depends_on:
       postgres:
         condition: service_healthy
