@@ -184,8 +184,12 @@ TEAMS_WEBHOOK_URL    Optional Microsoft Teams webhook for CI/CD failure notifica
 Optional repository variables:
 ```text
 PUBLIC_APP_URL       Public application URL attached to GitHub Deployment statuses
+ENABLE_DEPLOY        Set to true to push service images to ACR and update GitOps manifests
+ENABLE_TERRAFORM_APPLY  Set to true to allow Terraform plan/apply on push to main
 SECURITY_GATE        Set to true to make Checkov, dependency audit, and Trivy findings fail workflows
 ```
+
+Leave `ENABLE_DEPLOY` and `ENABLE_TERRAFORM_APPLY` unset or set to `false` when ACR/AKS/remote state are stopped or not configured. In that mode, workflows still validate, build local images, and run scans without publishing or applying infrastructure.
 
 Leave `SECURITY_GATE` unset or set to `false` for lab/demo pipelines. Set it to `true` only after dependency major upgrades have been planned, because the current NestJS services still have production dependency advisories that require breaking-version upgrades.
 

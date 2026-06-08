@@ -92,6 +92,8 @@ tags = {
 
 For low-cost lab runs, keep `db_geo_redundant_backup_enabled = false` and `aks_min_count = 1`. For production, review these values before enabling security gates.
 
+In GitHub Actions, Terraform only runs `plan/apply` when repository variable `ENABLE_TERRAFORM_APPLY` is set to `true` and required secrets are configured. Otherwise, the workflow stops after fmt, Checkov, init, and validate.
+
 ## Security Scanning
 GitHub Actions runs Checkov against Terraform. Lab-only cost and access tradeoffs are documented inline with `checkov:skip` comments, for example ACR Premium-only controls, private AKS API endpoint, paid AKS SLA, customer-managed disk encryption, and PostgreSQL geo-redundant backups.
 
