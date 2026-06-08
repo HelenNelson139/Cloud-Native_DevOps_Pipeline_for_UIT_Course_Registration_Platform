@@ -46,7 +46,7 @@ env:
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
 
 concurrency:
-  group: service-gitops-${{ github.ref }}
+  group: service-gitops-${{ github.ref }}-${{ inputs.image_name }}
   cancel-in-progress: false
 
 jobs:
