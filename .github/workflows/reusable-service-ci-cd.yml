@@ -35,6 +35,7 @@ on:
 permissions:
   contents: write
   deployments: write
+  packages: write
 
 env:
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
@@ -226,6 +227,21 @@ jobs:
       - name: Push Docker image
         if: ${{ steps.publish-mode.outputs.enabled == 'true' }}
         run: docker push "${{ steps.build-image.outputs.image_ref }}"
+
+      - name: Login to GitHub Container Registry
+        if: ${{ steps.publish-mode.outputs.enabled == 'true' }}
+        run: echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Mirror Docker image to GitHub Packages
+        if: ${{ steps.publish-mode.outputs.enabled == 'true' }}
+        env:
+          GHCR_OWNER: ${{ github.repository_owner }}
+        run: |
+          GHCR_OWNER="$(echo "$GHCR_OWNER" | tr '[:upper:]' '[:lower:]')"
+          GHCR_IMAGE_REF="ghcr.io/$GHCR_OWNER/${{ inputs.image_name }}:${{ github.sha }}"
+          docker tag "${{ steps.build-image.outputs.image_ref }}" "$GHCR_IMAGE_REF"
+          docker push "$GHCR_IMAGE_REF"
+          echo "Mirrored image to $GHCR_IMAGE_REF"
 
       - name: Install yq
         if: ${{ steps.publish-mode.outputs.enabled == 'true' && inputs.manifest_paths != '' }}

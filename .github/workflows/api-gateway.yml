@@ -28,6 +28,7 @@ on:
 permissions:
   contents: write
   deployments: write
+  packages: write
 
 jobs:
   api-gateway:
