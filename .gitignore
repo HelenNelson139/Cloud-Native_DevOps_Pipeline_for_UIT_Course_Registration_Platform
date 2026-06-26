@@ -73,3 +73,7 @@ override.tf.json
 *tfplan*
 
 kubectl-argo-rollouts.exe
+
+# Performance benchmark run artifacts
+performance/reports/*snapshot.txt
+performance/reports/node-smoke-summary.json

@@ -1,0 +1,70 @@
+{
+  "startedAt": "2026-06-26T17:08:01.653Z",
+  "endedAt": "2026-06-26T17:10:06.120Z",
+  "baseUrl": "http://20.44.237.162",
+  "vus": 10,
+  "durationSeconds": 120,
+  "thinkMs": 500,
+  "totalRequests": 760,
+  "failedRequests": 1,
+  "requestFailureRate": 0.001316,
+  "checksPassed": 759,
+  "checksFailed": 1,
+  "checksPassRate": 0.998684,
+  "avgRps": 6.333,
+  "latency": {
+    "p50_ms": 1458.74,
+    "p95_ms": 4248.95,
+    "p99_ms": 5667.31,
+    "max_ms": 7216.89
+  },
+  "byEndpoint": {
+    "login": {
+      "requests": 152,
+      "failed": 0,
+      "p50_ms": 129.19,
+      "p95_ms": 822.47,
+      "p99_ms": 1343.54,
+      "max_ms": 1439.82
+    },
+    "courses": {
+      "requests": 152,
+      "failed": 1,
+      "p50_ms": 3579.74,
+      "p95_ms": 5667.31,
+      "p99_ms": 6881.55,
+      "max_ms": 7216.89
+    },
+    "course_stats": {
+      "requests": 152,
+      "failed": 0,
+      "p50_ms": 1789.84,
+      "p95_ms": 2866.34,
+      "p99_ms": 3781.67,
+      "max_ms": 4243.8
+    },
+    "available_classes": {
+      "requests": 152,
+      "failed": 0,
+      "p50_ms": 1703.55,
+      "p95_ms": 2646.61,
+      "p99_ms": 3171.65,
+      "max_ms": 3315.83
+    },
+    "my_classes": {
+      "requests": 152,
+      "failed": 0,
+      "p50_ms": 39.53,
+      "p95_ms": 62.42,
+      "p99_ms": 108.6,
+      "max_ms": 218.7
+    }
+  },
+  "errors": [
+    {
+      "endpoint": "courses",
+      "status": 502,
+      "error": null
+    }
+  ]
+}
