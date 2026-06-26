@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 'uitdkhpacr2026.azurecr.io/api-gateway:7696e4272f8bf85f317ae7f394c7db2000bfdcd7'
+          image: 'uitdkhpacr2026.azurecr.io/api-gateway:178227830f85ec25c12c6455735815b6084fdab8'
           resources:
             requests:
               cpu: "100m"
